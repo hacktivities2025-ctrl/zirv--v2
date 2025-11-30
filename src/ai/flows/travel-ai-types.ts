@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+
 export const TravelAiInputSchema = z.object({
   prompt: z.string().describe("The user's question or prompt."),
 });
