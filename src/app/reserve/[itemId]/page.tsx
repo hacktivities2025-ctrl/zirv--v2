@@ -123,7 +123,9 @@ function ReservationContent() {
     id: item.id,
     name: item.name,
     mountainSlug: 'slug' in item ? item.slug : '',
-    itemType: itemType,
+    itemType: itemType as 'tour' | 'infoItem',
+    price: 'price' in item ? item.price : undefined,
+    hasCoupon: 'hasCoupon' in item ? item.hasCoupon : false
   }
 
   return (

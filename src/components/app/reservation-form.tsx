@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, TicketPercent, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -16,6 +16,8 @@ import { addReservation } from '@/lib/firebase-actions';
 import { useRouter } from 'next/navigation';
 import { useFirestore } from '@/firebase';
 import { Textarea } from '../ui/textarea';
+import { useState } from 'react';
+import { Mountain } from '@/lib/definitions';
 
 type Lang = 'az' | 'en';
 
@@ -33,6 +35,12 @@ const translations = {
     successDesc: 'Rezervasiyanız qəbul edildi. Təşəkkür edirik!',
     errorTitle: 'Xəta',
     errorDesc: 'Rezervasiya zamanı xəta baş verdi.',
+    coupon_code: 'Kupon Kodu',
+    apply_coupon: 'Tətbiq et',
+    coupon_applied: 'Kupon tətbiq edildi!',
+    invalid_coupon: 'Yanlış kupon kodu',
+    original_price: 'Orijinal Qiymət',
+    discounted_price: 'Endirimli Qiymət',
     validation: {
         name: 'Ad ən azı 2 hərf olmalıdır.',
         email: 'Düzgün bir email daxil edin.',
@@ -54,6 +62,12 @@ const translations = {
     successDesc: 'Your reservation has been received. Thank you!',
     errorTitle: 'Error',
     errorDesc: 'An error occurred during reservation.',
+    coupon_code: 'Coupon Code',
+    apply_coupon: 'Apply',
+    coupon_applied: 'Coupon Applied!',
+    invalid_coupon: 'Invalid coupon code',
+    original_price: 'Original Price',
+    discounted_price: 'Discounted Price',
     validation: {
         name: 'Name must be at least 2 characters.',
         email: 'Please enter a valid email.',
@@ -81,6 +95,8 @@ interface ReservationFormProps {
     name: string;
     mountainSlug: string;
     itemType: 'tour' | 'infoItem';
+    price?: number;
+    hasCoupon?: boolean;
   };
   lang: Lang;
 }
@@ -88,6 +104,10 @@ interface ReservationFormProps {
 export default function ReservationForm({ item, lang }: ReservationFormProps) {
   const reservationSchema = createReservationSchema(lang);
   const t = translations[lang];
+
+  const [couponCode, setCouponCode] = useState('');
+  const [discount, setDiscount] = useState(0);
+  const [couponMessage, setCouponMessage] = useState('');
 
   const form = useForm<z.infer<typeof reservationSchema>>({
     resolver: zodResolver(reservationSchema),
@@ -104,6 +124,19 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
   const router = useRouter();
   const { isSubmitting } = form.formState;
   const firestore = useFirestore();
+
+  const handleApplyCoupon = () => {
+    if (couponCode.toUpperCase() === 'WELCOME10') {
+        setDiscount(0.10); // 10% discount
+        setCouponMessage(t.coupon_applied);
+    } else {
+        setDiscount(0);
+        setCouponMessage(t.invalid_coupon);
+    }
+  };
+
+  const originalPrice = item.price;
+  const discountedPrice = originalPrice ? originalPrice * (1 - discount) : 0;
 
   async function onSubmit(values: z.infer<typeof reservationSchema>) {
     if(!firestore) return;
@@ -186,6 +219,38 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
             </FormItem>
           )}
         />
+        
+        {item.itemType === 'tour' && item.hasCoupon && (
+            <div className="space-y-2 p-4 border rounded-lg bg-secondary/50">
+                <FormLabel>{t.coupon_code}</FormLabel>
+                <div className="flex gap-2">
+                    <Input 
+                        placeholder="WELCOME10" 
+                        value={couponCode} 
+                        onChange={(e) => setCouponCode(e.target.value)} 
+                        disabled={discount > 0}
+                    />
+                    <Button type="button" onClick={handleApplyCoupon} disabled={discount > 0}>
+                        {discount > 0 ? <X className="h-4 w-4" /> : <TicketPercent className="h-4 w-4" />}
+                    </Button>
+                </div>
+                {couponMessage && <p className={cn("text-sm", discount > 0 ? "text-green-600" : "text-destructive")}>{couponMessage}</p>}
+                
+                {discount > 0 && originalPrice && (
+                    <div className="mt-4 space-y-1">
+                        <div className="flex justify-between text-sm text-muted-foreground">
+                            <span>{t.original_price}:</span>
+                            <span className="line-through">{originalPrice.toFixed(2)} AZN</span>
+                        </div>
+                         <div className="flex justify-between text-lg font-bold text-primary">
+                            <span>{t.discounted_price}:</span>
+                            <span>{discountedPrice.toFixed(2)} AZN</span>
+                        </div>
+                    </div>
+                )}
+            </div>
+        )}
+
         <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {t.confirm}
