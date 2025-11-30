@@ -321,3 +321,4 @@ const AppHeader = ({ isAdmin = false, lang, setLang }: AppHeaderProps) => {
 };
 
 export default AppHeader;
+
