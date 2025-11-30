@@ -2,6 +2,7 @@
 
 ## Core Features:
 
+
 - Country Information: Display detailed information about various countries, including general information, attractions, cuisine, hotels, visa requirements, and more, fetched from Firestore.
 - Admin Panel: Simple admin panel for managing country information and other data. Authenticated using password-based login with Next.js Server Actions and cookies.
 - Currency Converter: Real-time currency conversion tool for travelers to quickly calculate exchange rates.
