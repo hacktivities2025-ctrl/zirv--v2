@@ -118,3 +118,4 @@ export default function InfoCard({ item }: InfoCardProps) {
     </Card>
   );
 }
+
