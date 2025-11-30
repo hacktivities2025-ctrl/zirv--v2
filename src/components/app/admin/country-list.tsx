@@ -71,17 +71,22 @@ export default function MountainList() {
 
   if (loading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[...Array(3)].map((_, i) => (
-          <Skeleton key={i} className="h-48 w-full" />
-        ))}
+      <div className="space-y-4">
+        <div className="flex justify-end">
+          <Skeleton className="h-10 w-40" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-48 w-full" />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+       <div className="flex justify-end">
         <Button onClick={handleAddClick}>
           <PlusCircle className="mr-2 h-4 w-4" /> Yeni Tur Əlavə Et
         </Button>
@@ -113,6 +118,11 @@ export default function MountainList() {
             </div>
           </Card>
         ))}
+        {mountains.length === 0 && (
+          <div className="col-span-full text-center text-muted-foreground py-10">
+            <p>Heç bir tur tapılmadı. Yeni bir tur əlavə etmək üçün yuxarıdakı düymədən istifadə edin.</p>
+          </div>
+        )}
       </div>
 
       <CountryForm
