@@ -136,7 +136,9 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
   };
 
   const originalPrice = item.price;
-  const discountedPrice = originalPrice ? originalPrice * (1 - discount) : 0;
+  const finalPrice = originalPrice ? originalPrice * (1 - discount) : undefined;
+  const discountAmount = originalPrice && finalPrice ? originalPrice - finalPrice : undefined;
+
 
   async function onSubmit(values: z.infer<typeof reservationSchema>) {
     if(!firestore) return;
@@ -148,6 +150,10 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
         mountainSlug: item.mountainSlug,
         ...values,
         date: format(values.date, 'yyyy-MM-dd'),
+        originalPrice: originalPrice,
+        finalPrice: finalPrice,
+        discountAmount: discountAmount,
+        couponCode: discount > 0 ? couponCode : undefined,
       };
       await addReservation(firestore, reservationData);
       toast({
@@ -236,7 +242,7 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
                 </div>
                 {couponMessage && <p className={cn("text-sm", discount > 0 ? "text-green-600" : "text-destructive")}>{couponMessage}</p>}
                 
-                {discount > 0 && originalPrice && (
+                {discount > 0 && originalPrice && finalPrice && (
                     <div className="mt-4 space-y-1">
                         <div className="flex justify-between text-sm text-muted-foreground">
                             <span>{t.original_price}:</span>
@@ -244,7 +250,7 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
                         </div>
                          <div className="flex justify-between text-lg font-bold text-primary">
                             <span>{t.discounted_price}:</span>
-                            <span>{discountedPrice.toFixed(2)} AZN</span>
+                            <span>{finalPrice.toFixed(2)} AZN</span>
                         </div>
                     </div>
                 )}

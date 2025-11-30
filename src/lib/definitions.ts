@@ -56,7 +56,7 @@ export type Reservation = {
   id: string;
   itemId: string;
   itemName: string;
-  itemType: 'infoItem' | 'tour'; // Added to distinguish reservation types
+  itemType: 'infoItem' | 'tour';
   mountainSlug?: string;
   userName: string;
   email: string;
@@ -65,6 +65,10 @@ export type Reservation = {
   guests: number;
   specialRequests?: string;
   createdAt: any;
+  originalPrice?: number;
+  finalPrice?: number;
+  discountAmount?: number;
+  couponCode?: string;
 };
 
 export type Feedback = {

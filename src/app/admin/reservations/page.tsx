@@ -22,14 +22,15 @@ import AppHeader from '@/components/app/app-header';
 import { format, isWithinInterval, startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { useFirestore } from '@/firebase';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download } from 'lucide-react';
+import { Download, BadgePercent } from 'lucide-react';
 import Papa from 'papaparse';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 const columns: ColumnDef<Reservation>[] = [
   {
     accessorKey: 'itemName',
-    header: 'Məkan',
+    header: 'Məkan/Tur',
   },
   {
     accessorKey: 'userName',
@@ -44,22 +45,47 @@ const columns: ColumnDef<Reservation>[] = [
     header: 'Tarix',
   },
   {
-    accessorKey: 'time',
-    header: 'Saat',
-  },
-  {
     accessorKey: 'guests',
     header: 'Qonaq Sayı',
   },
-   {
-    accessorKey: 'specialRequests',
-    header: 'Xüsusi Qeydlər',
+  {
+    accessorKey: 'finalPrice',
+    header: 'Yekun Qiymət (AZN)',
     cell: ({ row }) => {
-      const requests = row.getValue('specialRequests') as string | undefined;
-      return requests ? (
-        <div className="max-w-[200px] truncate" title={requests}>
-          {requests}
+      const reservation = row.original;
+      const finalPrice = reservation.finalPrice;
+      const originalPrice = reservation.originalPrice;
+
+      if (typeof finalPrice !== 'number') {
+        return <span className="text-muted-foreground">-</span>;
+      }
+      
+      const hasDiscount = typeof originalPrice === 'number' && typeof reservation.discountAmount === 'number' && reservation.discountAmount > 0;
+
+      return (
+        <div className="flex flex-col">
+          <span className={hasDiscount ? 'text-primary font-bold' : ''}>
+            {finalPrice.toFixed(2)}
+          </span>
+          {hasDiscount && (
+            <span className="text-xs text-muted-foreground line-through">
+              {originalPrice?.toFixed(2)}
+            </span>
+          )}
         </div>
+      );
+    },
+  },
+  {
+    accessorKey: 'couponCode',
+    header: 'Kupon',
+    cell: ({ row }) => {
+      const couponCode = row.getValue('couponCode') as string | undefined;
+      return couponCode ? (
+        <Badge variant="secondary" className="flex items-center gap-1">
+            <BadgePercent className='h-3 w-3' />
+            {couponCode}
+        </Badge>
       ) : (
         <span className="text-muted-foreground">-</span>
       );
@@ -128,8 +154,26 @@ export default function ReservationsPage() {
   }, [filter, allData]);
 
   const exportToCSV = () => {
-    const csv = Papa.unparse(table.getRowModel().rows.map(row => row.original));
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const csvData = table.getRowModel().rows.map(row => {
+        const r = row.original;
+        return {
+            "Məkan/Tur": r.itemName,
+            "Ad": r.userName,
+            "Email": r.email,
+            "Tarix": r.date,
+            "Saat": r.time,
+            "Qonaq Sayı": r.guests,
+            "Orijinal Qiymət (AZN)": r.originalPrice?.toFixed(2) || 'N/A',
+            "Endirim (AZN)": r.discountAmount?.toFixed(2) || '0.00',
+            "Yekun Qiymət (AZN)": r.finalPrice?.toFixed(2) || 'N/A',
+            "Kupon": r.couponCode || '',
+            "Xüsusi Qeydlər": r.specialRequests || '',
+            "Rezervasiya Tarixi": r.createdAt ? format(new Date(r.createdAt), 'yyyy-MM-dd HH:mm') : 'N/A',
+        }
+    });
+
+    const csv = Papa.unparse(csvData);
+    const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
