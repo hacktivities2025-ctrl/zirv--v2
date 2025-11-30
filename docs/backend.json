@@ -1,0 +1,200 @@
+{
+  "entities": {
+    "Mountain": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Mountain",
+      "type": "object",
+      "description": "Represents a mountain with its associated information.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the mountain."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the mountain."
+        },
+        "slug": {
+          "type": "string",
+          "description": "A unique URL-friendly string representing the mountain's name."
+        },
+        "description": {
+          "type": "string",
+          "description": "General information and description about the mountain."
+        },
+        "imageUrl": {
+            "type": "string",
+            "description": "URL for a representative image of the mountain."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "slug",
+        "description",
+        "imageUrl"
+      ]
+    },
+    "InfoItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "InfoItem",
+      "type": "object",
+      "description": "Represents a specific piece of information related to a mountain, such as a restaurant or a hotel.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the information item."
+        },
+        "mountainId": {
+          "type": "string",
+          "description": "Reference to Mountain. (Relationship: Mountain 1:N InfoItem)"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the information item (e.g., restaurant, hotel)."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the information item."
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the information item."
+        },
+        "address": {
+          "type": "string",
+          "description": "Address of the place, if applicable."
+        },
+        "contact": {
+          "type": "string",
+          "description": "Contact information (phone number, email, website), if applicable."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of an image associated with the information item.",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "mountainId",
+        "category",
+        "title",
+        "description"
+      ]
+    },
+    "Reservation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reservation",
+      "type": "object",
+      "description": "Represents a reservation made for a specific info item.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the reservation."
+        },
+        "infoItemId": {
+          "type": "string",
+          "description": "Reference to InfoItem. (Relationship: InfoItem 1:N Reservation)"
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Name of the customer making the reservation."
+        },
+        "customerEmail": {
+          "type": "string",
+          "description": "Email address of the customer making the reservation.",
+          "format": "email"
+        },
+        "reservationDate": {
+          "type": "string",
+          "description": "The date and time for the reservation.",
+          "format": "date-time"
+        },
+        "numberOfPeople": {
+          "type": "number",
+          "description": "The number of people in the reservation."
+        }
+      },
+      "required": [
+        "id",
+        "infoItemId",
+        "customerName",
+        "customerEmail",
+        "reservationDate",
+        "numberOfPeople"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/mountains/{mountainId}",
+        "definition": {
+          "entityName": "Mountain",
+          "schema": {
+            "$ref": "#/backend/entities/Mountain"
+          },
+          "description": "Stores information about mountains.",
+          "params": [
+            {
+              "name": "mountainId",
+              "description": "The unique ID of the mountain."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/mountains/{mountainId}/infoItems/{infoItemId}",
+        "definition": {
+          "entityName": "InfoItem",
+          "schema": {
+            "$ref": "#/backend/entities/InfoItem"
+          },
+          "description": "Stores information items related to a mountain. Includes denormalized 'mountainId' for authorization independence.",
+          "params": [
+            {
+              "name": "mountainId",
+              "description": "The unique ID of the mountain."
+            },
+            {
+              "name": "infoItemId",
+              "description": "The unique ID of the information item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/mountains/{mountainId}/infoItems/{infoItemId}/reservations/{reservationId}",
+        "definition": {
+          "entityName": "Reservation",
+          "schema": {
+            "$ref": "#/backend/entities/Reservation"
+          },
+          "description": "Stores reservation data related to a specific info item.",
+          "params": [
+            {
+              "name": "mountainId",
+              "description": "The unique ID of the mountain."
+            },
+            {
+              "name": "infoItemId",
+              "description": "The unique ID of the information item."
+            },
+            {
+              "name": "reservationId",
+              "description": "The unique ID of the reservation."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to store mountain information, related info items, and reservations. It prioritizes authorization independence by not requiring `get()` calls in security rules. Since there are no explicit roles or user-specific data besides reservations, the structure focuses on organizing the data in a way that's easily queryable and maintainable, with a clear separation of concerns.\n\n1.  Mountains: Stores basic information about mountains.\n2.  InfoItems: Stores information about specific places or items near a mountain. Mountain ID is denormalized to each InfoItem to allow for easy querying of all InfoItems for a specific mountain.\n3.  Reservations: Stores reservation data related to each info item.\n\nThis structure enables secure `list` operations because the security rules can be applied at the collection level without needing to check parent documents. Since there are no user-based roles or access control requirements described in the document, the security rules will focus on data validation and preventing unauthorized modifications.\n\nAdmin access is managed via cookies and Next.js server actions so it won't be a part of the firestore rules."
+  }
+}

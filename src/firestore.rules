@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Admin-only Write Rules ---
+    match /mountains/{mountainId} {
+      allow read: if true;
+      allow write: if isAdmin(); 
+    }
+    match /infoItems/{infoItemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /feedback/{feedbackId} {
+        allow read, update, delete: if isAdmin();
+        allow create: if true;
+    }
+     match /companies/{companyId} {
+      allow read: if true;
+      allow create: if request.auth != null; // Agents can create their company profile
+      allow update: if isAdmin(); // Only admin can update status (approve)
+      allow delete: if isAdmin();
+    }
+
+
+    // --- User/Agent Specific Rules ---
+    match /reservations/{reservationId} {
+      allow read, create: if isSignedIn();
+      allow update, delete: if false; // No modifications allowed
+    }
+    
+    match /users/{userId} {
+      allow read, update, delete: if isOwner(userId) || isAdmin();
+      allow create: if request.auth != null; // Anyone can create their own user doc
+    }
+    
+    match /tours/{tourId} {
+        allow read: if true;
+        // Agents can create/update/delete their own tours
+        allow create, update, delete: if isAgent() && isTourOwner(resource.data.agentId);
+    }
+    
+    match /coupons/{couponId} {
+        allow read: if isOwner(resource.data.userId);
+        allow create: if isAgent() || isAdmin(); // Only backend/admin can create coupons
+        allow update: if isOwner(resource.data.userId); // User can update (claim) their own coupon
+        allow delete: if false;
+    }
+    
+
+    // --- Helper Functions ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function getUserRole(userId) {
+        return get(/databases/$(database)/documents/users/$(userId)).data.role;
+    }
+
+    function isAdmin() {
+        return isSignedIn() && getUserRole(request.auth.uid) == 'admin';
+    }
+
+    function isAgent() {
+        return isSignedIn() && getUserRole(request.auth.uid) == 'agent';
+    }
+    
+    function isTourOwner(agentId) {
+        return request.auth.uid == agentId;
+    }
+  }
+}

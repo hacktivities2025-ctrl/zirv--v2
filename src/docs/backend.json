@@ -1,0 +1,191 @@
+{
+  "entities": {
+    "Mountain": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Mountain",
+      "type": "object",
+      "description": "Represents a mountain with its associated information.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the mountain." },
+        "name": { "type": "string", "description": "The name of the mountain." },
+        "name_en": { "type": "string", "description": "The English name of the mountain." },
+        "slug": { "type": "string", "description": "A unique URL-friendly string representing the mountain's name." },
+        "description": { "type": "string", "description": "General information and description about the mountain." },
+        "description_en": { "type": "string", "description": "English description of the mountain." },
+        "imageUrl": { "type": "string", "description": "URL for a representative image of the mountain." },
+        "height": { "type": "number", "description": "The height of the mountain in meters." },
+        "bestSeason": { "type": "string", "description": "The best season to visit the mountain." },
+        "difficulty": { "type": "string", "description": "The difficulty level of climbing the mountain.", "enum": ["Asan", "Orta", "Çətin", "Ekstremal"] },
+        "latitude": { "type": "number", "description": "The latitude of the mountain." },
+        "longitude": { "type": "number", "description": "The longitude of the mountain." },
+        "temperature": { "type": "string", "description": "Average temperature range." }
+      },
+      "required": ["id", "name", "slug", "description", "imageUrl"]
+    },
+    "InfoItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "InfoItem",
+      "type": "object",
+      "description": "Represents a specific piece of information related to a mountain, such as a restaurant or a hotel.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the information item." },
+        "mountainId": { "type": "string", "description": "Reference to Mountain. (Relationship: Mountain 1:N InfoItem)" },
+        "category": { "type": "string", "description": "Category of the information item (e.g., restaurant, hotel)." },
+        "name": { "type": "string", "description": "Title of the information item." },
+        "name_en": { "type": "string", "description": "English title of the information item." },
+        "description": { "type": "string", "description": "Detailed description of the information item." },
+        "description_en": { "type": "string", "description": "English description of the information item." },
+        "address": { "type": "string", "description": "Address of the place, if applicable." },
+        "contact": { "type": "string", "description": "Contact information (phone number, email, website), if applicable." },
+        "imageUrl": { "type": "string", "description": "URL of an image associated with the information item.", "format": "uri" }
+      },
+      "required": ["id", "mountainId", "category", "name", "description"]
+    },
+    "Reservation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reservation",
+      "type": "object",
+      "description": "Represents a reservation made for a specific info item.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the reservation." },
+        "infoItemId": { "type": "string", "description": "Reference to InfoItem. (Relationship: InfoItem 1:N Reservation)" },
+        "customerName": { "type": "string", "description": "Name of the customer making the reservation." },
+        "customerEmail": { "type": "string", "description": "Email address of the customer making the reservation.", "format": "email" },
+        "reservationDate": { "type": "string", "description": "The date and time for the reservation.", "format": "date-time" },
+        "numberOfPeople": { "type": "number", "description": "The number of people in the reservation." }
+      },
+      "required": ["id", "infoItemId", "customerName", "customerEmail", "reservationDate", "numberOfPeople"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's profile with personal and travel information.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email", "description": "User's email address." },
+        "role": { "type": "string", "enum": ["user", "agent", "admin"], "description": "User role." },
+        "balance": { "type": "number", "description": "User's points balance." },
+        "referredBy": { "type": "string", "description": "ID of the user who referred this user." },
+        "emergencyContactName": { "type": "string", "description": "Name of the emergency contact person." },
+        "emergencyContactPhone": { "type": "string", "description": "Phone number of the emergency contact person." },
+        "name": { "type": "string", "description": "User's full name." },
+        "gender": { "type": "string", "enum": ["Male", "Female", "Other"] },
+        "age": { "type": "number" },
+        "family": { "type": "number", "description": "Family status: 0=no kids, 1=one kid, 2=more than one." },
+        "toursAttended": { "type": "number", "description": "Count of tours the user has attended." }
+      },
+      "required": ["email", "role", "balance", "emergencyContactName", "emergencyContactPhone"]
+    },
+    "Company": {
+        "title": "Company",
+        "description": "Represents a tourism company or agent.",
+        "type": "object",
+        "properties": {
+            "userId": { "type": "string", "description": "The ID of the user who owns this company profile." },
+            "companyName": { "type": "string" },
+            "phone": { "type": "string" },
+            "address": { "type": "string" },
+            "licenseNumber": { "type": "string" },
+            "description": { "type": "string" },
+            "status": { "type": "string", "enum": ["pending", "active", "rejected"] },
+            "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["userId", "companyName", "phone", "address", "licenseNumber", "status", "createdAt"]
+    },
+    "Tour": {
+        "title": "Tour",
+        "description": "Represents a tour offered by a company.",
+        "type": "object",
+        "properties": {
+            "agentId": { "type": "string", "description": "The ID of the user (agent) who created the tour." },
+            "name": { "type": "string" },
+            "country": { "type": "string" },
+            "description": { "type": "string" },
+            "imageUrl": { "type": "string", "format": "uri" },
+            "durationHours": { "type": "number" },
+            "price": { "type": "number" },
+            "hasCoupon": { "type": "boolean" },
+            "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["agentId", "name", "country", "description", "imageUrl", "durationHours", "price", "createdAt"]
+    },
+    "Coupon": {
+        "title": "Coupon",
+        "description": "Represents a coupon for a user.",
+        "type": "object",
+        "properties": {
+            "userId": { "type": "string" },
+            "code": { "type": "string" },
+            "description": { "type": "string" },
+            "points": { "type": "number" },
+            "isUsed": { "type": "boolean" },
+            "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["userId", "code", "points", "isUsed", "createdAt"]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/mountains/{mountainId}",
+        "definition": {
+          "entityName": "Mountain",
+          "schema": { "$ref": "#/backend/entities/Mountain" },
+          "description": "Stores information about mountains."
+        }
+      },
+      {
+        "path": "/infoItems/{infoItemId}",
+        "definition": {
+          "entityName": "InfoItem",
+          "schema": { "$ref": "#/backend/entities/InfoItem" },
+          "description": "Stores information items (hotels, restaurants, etc.)."
+        }
+      },
+      {
+        "path": "/reservations/{reservationId}",
+        "definition": {
+          "entityName": "Reservation",
+          "schema": { "$ref": "#/backend/entities/Reservation" },
+          "description": "Stores reservation data."
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+            "entityName": "UserProfile",
+            "schema": { "$ref": "#/backend/entities/UserProfile" },
+            "description": "Stores user profile data, including their role."
+        }
+      },
+      {
+        "path": "/companies/{companyId}",
+        "definition": {
+            "entityName": "Company",
+            "schema": { "$ref": "#/backend/entities/Company" },
+            "description": "Stores profiles for tourism companies/agents, pending approval."
+        }
+      },
+      {
+          "path": "/tours/{tourId}",
+          "definition": {
+              "entityName": "Tour",
+              "schema": { "$ref": "#/backend/entities/Tour" },
+              "description": "Stores tours created by approved agents."
+          }
+      },
+       {
+          "path": "/coupons/{couponId}",
+          "definition": {
+              "entityName": "Coupon",
+              "schema": { "$ref": "#/backend/entities/Coupon" },
+              "description": "Stores coupons awarded to users."
+          }
+      }
+    ]
+  }
+}
