@@ -17,22 +17,47 @@ import {
   writeBatch,
   increment,
 } from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, AuthErrorCodes, signInWithEmailAndPassword } from 'firebase/auth';
 import type { Mountain, InfoItem, Reservation, InfoCategory, Feedback, UserProfile, Company, Tour, Coupon } from './definitions';
 import { slugify } from './utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
+// --- User Friendly Error Handling ---
+function handleAuthError(error: any): string {
+    if (error.code) {
+        switch (error.code) {
+            case AuthErrorCodes.INVALID_EMAIL:
+            case AuthErrorCodes.USER_NOT_FOUND:
+            case AuthErrorCodes.WRONG_PASSWORD:
+            case 'auth/invalid-credential':
+                return 'Email və ya parol səhvdir.';
+            case AuthErrorCodes.EMAIL_EXISTS:
+                return 'Bu email artıq istifadə olunur.';
+            case AuthErrorCodes.WEAK_PASSWORD:
+                return 'Parol çox zəifdir. Ən azı 6 simvol olmalıdır.';
+            default:
+                return 'Bilinməyən bir xəta baş verdi. Zəhmət olmasa yenidən cəhd edin.';
+        }
+    }
+    return error.message || 'Bilinməyən bir xəta baş verdi.';
+}
+
+
 // --- User & Agent Creation ---
 
 async function createAuthUser(email: string, password: string): Promise<string> {
     const auth = getAuth();
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    return userCredential.user.uid;
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        return userCredential.user.uid;
+    } catch (error) {
+        throw new Error(handleAuthError(error));
+    }
 }
 
 export async function createUserProfile(db: Firestore, data: Omit<UserProfile, 'email' | 'balance' | 'toursAttended' | 'referralBonusClaimed'> & { email: string; password?: string; referredBy?: string }) {
-    if (!data.password) throw new Error("Password is required to create a user.");
+    if (!data.password) throw new Error("Parol məcburidir.");
     const userId = await createAuthUser(data.email, data.password);
 
     const batch = writeBatch(db);
@@ -71,23 +96,24 @@ export async function createUserProfile(db: Firestore, data: Omit<UserProfile, '
 
     batch.set(userDocRef, profileData);
 
-    await batch.commit().catch(error => {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path: userDocRef.path,
+    try {
+        await batch.commit();
+    } catch (error) {
+         errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: `batch write for user ${userId}`,
             operation: 'create',
-            requestResourceData: profileData,
+            requestResourceData: { profileData, welcomeCoupon }
         }));
         throw error;
-    });
+    }
 }
 
-export async function createAgentProfile(db: Firestore, data: Omit<Company, 'id' | 'userId' | 'status' | 'createdAt'> & { password?: string }) {
-    if (!data.password) throw new Error("Password is required to create an agent.");
+export async function createAgentProfile(db: Firestore, data: Omit<Company, 'id' | 'userId' | 'status' | 'createdAt' | 'email'> & { email: string; password?: string }) {
+    if (!data.password) throw new Error("Parol məcburidir.");
     const userId = await createAuthUser(data.email, data.password);
 
     const batch = writeBatch(db);
 
-    // 1. Create user profile
     const userDocRef = doc(db, 'users', userId);
     const userProfileData: Partial<UserProfile> = {
         email: data.email,
@@ -98,7 +124,6 @@ export async function createAgentProfile(db: Firestore, data: Omit<Company, 'id'
     };
     batch.set(userDocRef, userProfileData, { merge: true });
 
-    // 2. Create company profile
     const companyDocRef = doc(collection(db, 'companies'));
     const companyData: Omit<Company, 'id'> = {
         userId: userId,
@@ -113,14 +138,16 @@ export async function createAgentProfile(db: Firestore, data: Omit<Company, 'id'
     };
     batch.set(companyDocRef, companyData);
 
-    await batch.commit().catch(error => {
+    try {
+        await batch.commit();
+    } catch (error) {
          errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path: `batch write for user ${userId}`,
+            path: `batch write for agent ${userId}`,
             operation: 'create',
             requestResourceData: { userProfileData, companyData }
         }));
         throw error;
-    });
+    }
 }
 
 
@@ -518,13 +545,15 @@ export async function claimCoupon(db: Firestore, userId: string, couponId: strin
     batch.update(couponRef, { isUsed: true });
     batch.update(userRef, { balance: increment(coupon.points) });
     
-    await batch.commit().catch(error => {
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
+    try {
+      await batch.commit()
+    } catch (error) {
+       errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: `batch write for coupon ${couponId} and user ${userId}`,
             operation: 'update',
         }));
         throw error;
-    });
+    }
 }
 
 
@@ -554,7 +583,18 @@ export async function awardScoreboardPrizes(db: Firestore): Promise<void> {
     if (prizeWinners.length > 0) {
         await batch.commit().catch(error => {
             console.error("Error awarding prizes: ", error);
-            throw new Error("Failed to award prizes.");
+            throw new Error("Mükafatların verilməsi zamanı xəta baş verdi.");
         });
+    }
+}
+
+// --- Auth Actions ---
+export async function signInUser(email: string, password: string) {
+    const auth = getAuth();
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        return userCredential.user;
+    } catch (error) {
+        throw new Error(handleAuthError(error));
     }
 }

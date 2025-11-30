@@ -9,9 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Mountain, LogIn, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useAuth, useFirestore } from '@/firebase';
-import { getUserProfile, getCompanyByUserId } from '@/lib/firebase-actions';
+import { getUserProfile, getCompanyByUserId, signInUser } from '@/lib/firebase-actions';
 import Cookies from 'js-cookie';
 
 function SubmitButton() {
@@ -40,14 +39,13 @@ export default function LoginPage() {
         toast({
             variant: "destructive",
             title: "Giriş uğursuz oldu",
-            description: "Email və ya parol düzgün deyil.",
+            description: "Email və ya parol sahələri boş ola bilməz.",
         });
         return;
     }
 
     try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+        const user = await signInUser(email, password);
 
         // Fetch user role
         const userProfile = await getUserProfile(firestore, user.uid);
@@ -82,7 +80,7 @@ export default function LoginPage() {
          toast({
             variant: "destructive",
             title: "Giriş uğursuz oldu",
-            description: "Email və ya parol düzgün deyil.",
+            description: error.message || "Email və ya parol düzgün deyil.",
         });
     }
   };

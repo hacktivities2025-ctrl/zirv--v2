@@ -35,14 +35,22 @@ export default function RegisterAgentPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {},
+    defaultValues: {
+      email: '',
+      password: '',
+      companyName: '',
+      phone: '',
+      address: '',
+      licenseNumber: '',
+      description: '',
+    },
   });
 
   const { isSubmitting } = form.formState;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!firestore) {
-        toast({ variant: 'destructive', title: 'Xəta', description: 'Firebase yüklənməyib.' });
+        toast({ variant: 'destructive', title: 'Xəta', description: 'Serverə qoşulma zamanı xəta.' });
         return;
     }
     
