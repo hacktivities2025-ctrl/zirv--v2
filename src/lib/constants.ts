@@ -5,9 +5,9 @@ export const AUTH_TOKEN_COOKIE = "firebase-auth-token";
 
 type Category = {
   id: 'hotels' | 'restaurants' | 'attractions' | 'cuisine';
-  name: string; // English name
-  name_az: string; // Azerbaijani name
-  name_ru?: string; // Russian name (optional)
+  name: string; 
+  name_az: string;
+  name_ru?: string; 
   icon: LucideIcon;
 };
 
