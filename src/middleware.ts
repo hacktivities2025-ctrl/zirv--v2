@@ -12,7 +12,6 @@ export async function middleware(request: NextRequest) {
   const isAgentRoute = pathname.startsWith('/guide');
   const isAuthRoute = ['/login', '/register', '/register/user', '/register/agent'].includes(pathname);
 
-  // Handle Admin routes
   if (isAdminRoute && pathname !== '/admin/login' && userRole !== 'admin') {
     return NextResponse.redirect(new URL('/admin/login', request.url));
   }
@@ -20,18 +19,15 @@ export async function middleware(request: NextRequest) {
      return NextResponse.redirect(new URL('/admin', request.url));
   }
 
-  // Handle Agent routes
   if (isAgentRoute) {
     if (userRole !== 'agent') {
         return NextResponse.redirect(new URL('/login', request.url));
     }
-    // If agent is logged in but company is not active, redirect to pending page
     if (companyStatus && companyStatus !== 'active') {
         return NextResponse.redirect(new URL('/guide/pending', request.url));
     }
   }
 
-  // If a logged in user (any role) tries to access an auth page, redirect them
   if (isAuthRoute && token) {
       if (userRole === 'admin') return NextResponse.redirect(new URL('/admin', request.url));
       if (userRole === 'agent') return NextResponse.redirect(new URL('/guide', request.url));
