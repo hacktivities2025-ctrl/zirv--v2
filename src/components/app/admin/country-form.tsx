@@ -22,6 +22,7 @@ const formSchema = z.object({
   description: z.string().min(10, { message: 'Təsvir (AZ) ən azı 10 hərf olmalıdır.' }),
   description_en: z.string().optional(),
   imageUrl: z.string().url({ message: 'Düzgün bir URL daxil edin.' }),
+  price: z.coerce.number().positive({ message: 'Qiymət müsbət ədəd olmalıdır.' }),
   height: z.coerce.number().positive({ message: 'Hündürlük müsbət ədəd olmalıdır.' }).optional(),
   bestSeason: z.string().optional(),
   difficulty: z.enum(['Asan', 'Orta', 'Çətin', 'Ekstremal']).optional(),
@@ -34,7 +35,7 @@ interface MountainFormProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   onFormSubmit: () => void;
-  country?: Mountain | null; // Renaming to mountain internally
+  country?: Mountain | null;
 }
 
 export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, country: mountain }: MountainFormProps) {
@@ -46,6 +47,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
       description: '',
       description_en: '',
       imageUrl: '',
+      price: undefined,
       height: undefined,
       bestSeason: '',
       difficulty: undefined,
@@ -67,6 +69,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         description: mountain.description || '',
         description_en: mountain.description_en || '',
         imageUrl: mountain.imageUrl || '',
+        price: mountain.price || undefined,
         height: mountain.height || undefined,
         bestSeason: mountain.bestSeason || '',
         difficulty: mountain.difficulty || undefined,
@@ -81,6 +84,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         description: '',
         description_en: '',
         imageUrl: '',
+        price: undefined,
         height: undefined,
         bestSeason: '',
         difficulty: undefined,
@@ -120,7 +124,6 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-            {/* Basic Info */}
             <div className='p-4 border rounded-lg space-y-4'>
                 <FormField control={form.control} name="name" render={({ field }) => (
                     <FormItem>
@@ -138,7 +141,6 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                 )} />
             </div>
 
-            {/* Description */}
             <div className='p-4 border rounded-lg space-y-4'>
                 <FormField control={form.control} name="description" render={({ field }) => (
                     <FormItem>
@@ -156,7 +158,6 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                 )} />
             </div>
             
-            {/* Image */}
             <FormField control={form.control} name="imageUrl" render={({ field }) => (
                 <FormItem>
                     <FormLabel>Şəkil URL</FormLabel>
@@ -164,8 +165,15 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                     <FormMessage />
                 </FormItem>
             )} />
+            
+             <FormField control={form.control} name="price" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Qiymət (AZN)</FormLabel>
+                    <FormControl><Input type="number" placeholder="50" {...field} value={field.value || ''}/></FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
 
-            {/* Mountain Details */}
             <div className='p-4 border rounded-lg space-y-4'>
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
                     <FormField control={form.control} name="height" render={({ field }) => (

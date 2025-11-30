@@ -9,6 +9,7 @@ export type Mountain = {
   imageUrl: string;
   description: string;
   description_en?: string;
+  price: number;
   height?: number;
   bestSeason?: string;
   difficulty?: 'Asan' | 'Orta' | 'Çətin' | 'Ekstremal';

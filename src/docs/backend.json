@@ -13,6 +13,7 @@
         "description": { "type": "string", "description": "General information and description about the mountain." },
         "description_en": { "type": "string", "description": "English description of the mountain." },
         "imageUrl": { "type": "string", "description": "URL for a representative image of the mountain." },
+        "price": { "type": "number", "description": "The price of the tour." },
         "height": { "type": "number", "description": "The height of the mountain in meters." },
         "bestSeason": { "type": "string", "description": "The best season to visit the mountain." },
         "difficulty": { "type": "string", "description": "The difficulty level of climbing the mountain.", "enum": ["Asan", "Orta", "Çətin", "Ekstremal"] },
@@ -20,7 +21,7 @@
         "longitude": { "type": "number", "description": "The longitude of the mountain." },
         "temperature": { "type": "string", "description": "Average temperature range." }
       },
-      "required": ["id", "name", "slug", "description", "imageUrl"]
+      "required": ["id", "name", "slug", "description", "imageUrl", "price"]
     },
     "InfoItem": {
       "$schema": "http://json-schema.org/draft-07/schema#",
