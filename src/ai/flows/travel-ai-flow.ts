@@ -1,5 +1,6 @@
 'use server';
 
+
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { TravelAiInputSchema, TravelAiOutputSchema, type TravelAiInput, type TravelAiOutput } from './travel-ai-types';
