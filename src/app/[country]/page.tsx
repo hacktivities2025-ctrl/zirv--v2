@@ -11,13 +11,14 @@ import AppHeader from '@/components/app/app-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, ChevronRight, PlayCircle, Clock, Tag, Ticket, MountainIcon, Thermometer, Shield, Calendar, Map, Check } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import type { LucideIcon } from 'lucide-react';
 import { useAnimation } from '@/components/app/animation-provider';
 import { useReadingMode } from '@/components/app/reading-mode-provider';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 export default function MountainPage() {
   const params = useParams();
@@ -26,6 +27,8 @@ export default function MountainPage() {
   const firestore = useFirestore();
   const { triggerAnimation } = useAnimation();
   const { isReadingMode, speakText } = useReadingMode();
+  const { user, isUserLoading } = useUser();
+  const { toast } = useToast();
   
   const [mountain, setMountain] = useState<Mountain | null>(null);
   const [items, setItems] = useState<InfoItem[]>([]);
@@ -93,6 +96,7 @@ export default function MountainPage() {
             temperature: 'Temperatur',
             has_coupon: 'Kupon Mövcuddur',
             location: 'Məkan (Xəritədə)',
+            login_required: 'Rezervasiya etmək üçün daxil olmalısınız.',
         },
         en: { 
             discover: 'Discover', 
@@ -110,6 +114,7 @@ export default function MountainPage() {
             temperature: 'Temperature',
             has_coupon: 'Coupon Available',
             location: 'Location (on Map)',
+            login_required: 'You must be logged in to make a reservation.',
         },
     }[pageLang];
 
@@ -122,6 +127,21 @@ export default function MountainPage() {
   const handleSpeak = (text: string | undefined) => {
     if (text) speakText(text, pageLang === 'az' ? 'tr-TR' : `${lang}-${lang.toUpperCase()}`);
   }
+  
+  const handleReservationClick = () => {
+    if (!user) {
+        toast({
+            variant: 'destructive',
+            title: 'Giriş tələb olunur',
+            description: t.login_required,
+        });
+        router.push('/login');
+        return;
+    }
+    if (mountain) {
+        router.push(`/reserve/${mountain.id}?type=tour`);
+    }
+  };
 
   const renderContent = () => {
     if (loading) {
@@ -173,11 +193,9 @@ export default function MountainPage() {
                         </div>
                     )}
                 </div>
-                 <Button asChild size="lg" className="w-full sm:w-auto">
-                    <Link href={`/reserve/${mountain.id}?type=tour`}>
-                        <Ticket className="mr-2"/>
-                        {t.reserve_tour}
-                    </Link>
+                 <Button onClick={handleReservationClick} size="lg" className="w-full sm:w-auto" disabled={isUserLoading}>
+                    <Ticket className="mr-2"/>
+                    {t.reserve_tour}
                 </Button>
             </CardContent>
           </Card>

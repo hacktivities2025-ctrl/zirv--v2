@@ -14,7 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useReadingMode } from '@/components/app/reading-mode-provider';
 import { cn } from '@/lib/utils';
@@ -33,6 +33,7 @@ const t = (lang: Lang) => ({
         back: 'Geri',
         noInfo: 'Məlumat Tapılmadı',
         noInfoDesc: 'Bu kateqoriya üçün hələ heç bir məlumat əlavə edilməyib.',
+        login_required: 'Rezervasiya etmək üçün daxil olmalısınız.',
     },
     en: {
         location: 'Location',
@@ -45,6 +46,7 @@ const t = (lang: Lang) => ({
         back: 'Back',
         noInfo: 'No Information Found',
         noInfoDesc: 'No information has been added for this category yet.',
+        login_required: 'You must be logged in to make a reservation.',
     },
 }[lang]);
 
@@ -52,6 +54,10 @@ const t = (lang: Lang) => ({
 function CardItem({ item, lang }: { item: InfoItem, lang: Lang }) {
     const router = useRouter();
     const { isReadingMode, speakText } = useReadingMode();
+    const { user, isUserLoading } = useUser();
+    const { toast } = useToast();
+    const trans = t(lang);
+
     const canReserve = item.category === 'hotels' || item.category === 'restaurants';
     
     const hasNearbyRestaurant = !!item.nearbyRestaurants;
@@ -71,10 +77,22 @@ function CardItem({ item, lang }: { item: InfoItem, lang: Lang }) {
         return `/reserve/nearby?${params.toString()}`;
     }
 
+    const handleReservationClick = () => {
+        if (!user) {
+            toast({
+                variant: 'destructive',
+                title: 'Giriş tələb olunur',
+                description: trans.login_required,
+            });
+            router.push('/login');
+            return;
+        }
+        router.push(`/reserve/${item.id}`);
+    };
+
     const name = (lang === 'en' && item.name_en) ? item.name_en : item.name;
     const description = (lang === 'en' && item.description_en) ? item.description_en : item.description;
     const ingredients = (lang === 'en' && item.ingredients_en) ? item.ingredients_en : item.ingredients;
-    const trans = t(lang);
 
     const handleSpeak = (text: string | undefined) => {
         if (text) speakText(text, lang === 'az' ? 'tr-TR' : `${lang}-${lang.toUpperCase()}`);
@@ -168,8 +186,8 @@ function CardItem({ item, lang }: { item: InfoItem, lang: Lang }) {
                     </Dialog>
                 )}
                 {canReserve && (
-                     <Button className="w-full" asChild>
-                        <Link href={`/reserve/${item.id}`}>{trans.reserve}</Link>
+                     <Button className="w-full" onClick={handleReservationClick} disabled={isUserLoading}>
+                        {trans.reserve}
                     </Button>
                 )}
             </CardFooter>
