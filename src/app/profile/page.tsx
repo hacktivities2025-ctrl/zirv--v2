@@ -163,7 +163,7 @@ function CouponsTab({ onClaim }: { onClaim: (points: number) => void }) {
                                     <p className="text-sm text-muted-foreground">{coupon.description}</p>
                                 </div>
                                 <Button size="icon" onClick={() => handleClaim(coupon)} disabled={coupon.isUsed} aria-label="Kuponu aktivləşdir">
-                                    <GiftIcon className={coupon.isUsed ? 'fill-current' : ''} />
+                                    {coupon.isUsed ? <Check/> : <GiftIcon /> }
                                 </Button>
                              </div>
                         ))}
@@ -184,13 +184,20 @@ function TasksTab({ profile, onTaskComplete }: { profile: UserProfile | null, on
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
-    const referralLink = user ? `${window.location.origin}/register/user?ref=${user.uid}` : '';
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // This will work on any deployment environment (local, Vercel, etc.)
+    const referralLink = (typeof window !== 'undefined' && user) ? `${window.location.origin}/register/user?ref=${user.uid}` : '';
 
     const isBonusClaimed = profile?.referralBonusClaimed || false;
 
     const copyToClipboard = async () => {
-        if (!user || !firestore || isBonusClaimed || isSubmitting) return;
+        if (!user || !firestore || isSubmitting) return;
+
+        navigator.clipboard.writeText(referralLink);
+        toast({ title: "Link Kopyalandı!", description: "Dostlarınızı dəvət etmək üçün linki onlarla paylaşın." });
+
+        if (isBonusClaimed) return;
         
         setIsSubmitting(true);
         try {
@@ -198,8 +205,7 @@ function TasksTab({ profile, onTaskComplete }: { profile: UserProfile | null, on
                 balance: increment(50),
                 referralBonusClaimed: true
             });
-            navigator.clipboard.writeText(referralLink);
-            toast({ title: "Təbriklər!", description: "Link kopyalandı və balansınıza 50 xal əlavə olundu." });
+            toast({ title: "Təbriklər!", description: "Balansınıza 50 xal əlavə olundu." });
             onTaskComplete();
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Xəta', description: 'Xal əlavə edilərkən xəta baş verdi.' });
@@ -219,16 +225,16 @@ function TasksTab({ profile, onTaskComplete }: { profile: UserProfile | null, on
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                          <div>
                             <h4 className="font-semibold text-lg">Dostunu Dəvət Et</h4>
-                            <p className="text-muted-foreground mt-1">Bu linki kopyalaraq <span className="font-bold text-primary">50 XAL</span> qazanın!</p>
+                            <p className="text-muted-foreground mt-1">Bu düyməyə basaraq həm linki kopyalayın, həm də <span className="font-bold text-primary">50 XAL</span> qazanın!</p>
                         </div>
                          <Button onClick={copyToClipboard} className="mt-4 md:mt-0" disabled={isSubmitting || isBonusClaimed}>
                             {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
                             : isBonusClaimed ? <Check className="mr-2 h-4 w-4" /> 
                             : <Copy className="mr-2 h-4 w-4" />}
-                            {isBonusClaimed ? 'Link Kopyalandı!' : 'Linki Kopyala'}
+                            {isBonusClaimed ? 'Xal Qazanıldı!' : 'Linki Kopyala və Qazan'}
                         </Button>
                     </div>
-                    <Input readOnly value={referralLink} className="mt-4 bg-muted" />
+                    {referralLink && <Input readOnly value={referralLink} className="mt-4 bg-muted" />}
                 </div>
             </CardContent>
         </Card>

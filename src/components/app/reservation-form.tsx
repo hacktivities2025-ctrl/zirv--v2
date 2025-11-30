@@ -188,10 +188,10 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField control={form.control} name="userName" render={({ field }) => (
-                <FormItem><FormLabel>{t.fullName}</FormLabel><FormControl><Input placeholder="John Doe" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>{t.fullName}</FormLabel><FormControl><Input placeholder="John Doe" {...field} value={field.value || user?.displayName || ''} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="email" render={({ field }) => (
-                <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="email@example.com" {...field} /></FormControl><FormMessage /></FormItem>
+                <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="email@example.com" {...field} value={field.value || user?.email || ''} onChange={field.onChange} /></FormControl><FormMessage /></FormItem>
             )} />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
