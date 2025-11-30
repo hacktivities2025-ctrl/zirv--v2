@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
+
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Ad (AZ) ən azı 2 hərf olmalıdır.' }),
   name_en: z.string().optional(),
