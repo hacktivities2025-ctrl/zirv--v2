@@ -25,8 +25,6 @@ import { Badge } from '@/components/ui/badge';
 import { Check, Clock, X, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-// Import your TourForm component, assuming you have one for editing
-// import TourForm from '@/components/app/guide/tour-form';
 
 
 export default function TourApprovalPage() {
@@ -38,10 +36,7 @@ export default function TourApprovalPage() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const firestore = useFirestore();
 
-  // State for edit form
-  // const [isFormOpen, setIsFormOpen] = React.useState(false);
-  // const [selectedTour, setSelectedTour] = React.useState<Tour | null>(null);
-
+  
   const loadTours = React.useCallback(async () => {
     if (!firestore) return;
     setLoading(true);
@@ -74,11 +69,7 @@ export default function TourApprovalPage() {
     }
   }
 
-  // const handleEditClick = (tour: Tour) => {
-  //   setSelectedTour(tour);
-  //   setIsFormOpen(true);
-  // };
-
+  
   const getStatusBadge = (status: 'pending' | 'approved' | 'rejected') => {
     switch (status) {
       case 'approved':
@@ -123,9 +114,7 @@ export default function TourApprovalPage() {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        {/* <DropdownMenuItem onClick={() => handleEditClick(tour)}>
-                            <Edit className="mr-2 h-4 w-4" /> Redaktə et
-                        </DropdownMenuItem> */}
+                        {}
                         {tour.status !== 'approved' && (
                              <DropdownMenuItem onClick={() => handleStatusChange(tour.id, 'approved')}>
                                 <Check className="mr-2 h-4 w-4" /> Təsdiqlə
@@ -247,12 +236,7 @@ export default function TourApprovalPage() {
         </Tabs>
       </main>
 
-       {/* <TourForm
-        isOpen={isFormOpen}
-        onOpenChange={setIsFormOpen}
-        onFormSubmit={loadTours}
-        tour={selectedTour}
-      /> */}
+       {}
     </>
   );
 }
