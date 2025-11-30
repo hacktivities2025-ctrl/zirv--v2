@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { getInfoItemById, getMountainData } from '@/lib/firebase-actions';
+import { getInfoItemById } from '@/lib/firebase-actions';
 import { InfoItem, Mountain } from '@/lib/definitions';
 import AppHeader from '@/components/app/app-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Star, ArrowLeft } from 'lucide-react';
 import { useFirestore } from '@/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 type Lang = 'az' | 'en';
 
@@ -50,10 +51,10 @@ function ReservationContent() {
       try {
         let itemData: InfoItem | Mountain | null = null;
         if (itemType === 'tour') {
-            const q = await getDocs(query(collection(firestore, "mountains"), where("id", "==", itemId)));
-            if (!q.empty) {
-                const doc = q.docs[0];
-                itemData = { id: doc.id, ...doc.data() } as Mountain;
+            const tourDocRef = doc(firestore, "mountains", itemId);
+            const docSnap = await getDoc(tourDocRef);
+            if (docSnap.exists()) {
+                itemData = { id: docSnap.id, ...docSnap.data() } as Mountain;
             }
         } else {
             itemData = await getInfoItemById(firestore, itemId);
