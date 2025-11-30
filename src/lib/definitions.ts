@@ -127,7 +127,7 @@ export type Company = {
 export type Tour = {
     id: string;
     agentId: string;
-    agentName?: string; // Add this
+    agentName?: string;
     name: string;
     country: string;
     description: string;
