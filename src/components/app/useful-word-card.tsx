@@ -12,8 +12,6 @@ export default function UsefulWordCard({ item }: UsefulWordCardProps) {
     const handleSpeak = (text: string) => {
         if ('speechSynthesis' in window && text) {
             const utterance = new SpeechSynthesisUtterance(text);
-            // You can configure language if you have it in your data
-            // utterance.lang = 'tr-TR' or 'it-IT' etc.
             window.speechSynthesis.speak(utterance);
         }
     };
