@@ -50,7 +50,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
       description: '',
       description_en: '',
       imageUrl: '',
-      price: undefined,
+      price: 0,
       durationHours: undefined,
       height: undefined,
       bestSeason: '',
@@ -74,7 +74,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         description: mountain.description || '',
         description_en: mountain.description_en || '',
         imageUrl: mountain.imageUrl || '',
-        price: mountain.price || undefined,
+        price: mountain.price || 0,
         durationHours: mountain.durationHours || undefined,
         height: mountain.height || undefined,
         bestSeason: mountain.bestSeason || '',
@@ -91,7 +91,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         description: '',
         description_en: '',
         imageUrl: '',
-        price: undefined,
+        price: 0,
         durationHours: undefined,
         height: undefined,
         bestSeason: '',
@@ -179,14 +179,14 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                  <FormField control={form.control} name="price" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Qiymət (AZN)</FormLabel>
-                        <FormControl><Input type="number" placeholder="50" {...field} value={field.value || ''}/></FormControl>
+                        <FormControl><Input type="number" placeholder="50" {...field} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                  <FormField control={form.control} name="durationHours" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Müddət (saat)</FormLabel>
-                        <FormControl><Input type="number" placeholder="8" {...field} value={field.value || ''} /></FormControl>
+                        <FormControl><Input type="number" placeholder="8" {...field} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
@@ -206,7 +206,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                     <FormField control={form.control} name="height" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Hündürlük (m)</FormLabel>
-                            <FormControl><Input type="number" placeholder="4243" {...field} value={field.value || ''} /></FormControl>
+                            <FormControl><Input type="number" placeholder="4243" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -246,14 +246,14 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                     <FormField control={form.control} name="latitude" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Enlik (Latitude)</FormLabel>
-                            <FormControl><Input type="number" step="any" placeholder="41.032" {...field} value={field.value || ''} /></FormControl>
+                            <FormControl><Input type="number" step="any" placeholder="41.032" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="longitude" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Uzunluq (Longitude)</FormLabel>
-                            <FormControl><Input type="number" step="any" placeholder="48.271" {...field} value={field.value || ''} /></FormControl>
+                            <FormControl><Input type="number" step="any" placeholder="48.271" {...field} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
