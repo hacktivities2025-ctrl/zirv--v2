@@ -39,6 +39,7 @@ const ParallaxBackground = () => {
         <div className="absolute inset-0 bg-black/30 bg-gradient-to-t from-background/50 via-transparent to-transparent"></div>
       </div>
     </div>
+    
   );
 };
 
