@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 
+
 const Footer = () => {
   const [lang, setLang] = React.useState('az');
 
