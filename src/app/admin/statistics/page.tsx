@@ -93,8 +93,8 @@ export default function StatisticsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Dağlar üzrə Rezervasiya Statistikası</CardTitle>
-          <CardDescription>Hər bir dağ üçün edilən ümumi rezervasiyaların sayı.</CardDescription>
+          <CardTitle>Turlar üzrə Rezervasiya Statistikası</CardTitle>
+          <CardDescription>Hər bir tur üçün edilən ümumi rezervasiyaların sayı.</CardDescription>
         </CardHeader>
         <CardContent>
           <ReservationChart />

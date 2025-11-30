@@ -25,8 +25,8 @@ function SuccessContent() {
   const pageLang = lang;
   
   const t = {
-    az: { title: 'Rezervasiya Uğurludur!', description: 'Rezervasiyanız uğurla qeydə alındı. Təyin etdiyiniz zamanda sizi gözləyəcəyik.', new_reservation: 'Yeni Rezervasiya', back_to_mountain: 'Dağ Səhifəsinə Qayıt' },
-    en: { title: 'Reservation Successful!', description: 'Your reservation has been successfully registered. We will be waiting for you at the appointed time.', new_reservation: 'New Reservation', back_to_mountain: 'Back to Mountain Page' },
+    az: { title: 'Rezervasiya Uğurludur!', description: 'Rezervasiyanız uğurla qeydə alındı. Təyin etdiyiniz zamanda sizi gözləyəcəyik.', new_reservation: 'Yeni Rezervasiya', back_to_mountain: 'Tur Səhifəsinə Qayıt' },
+    en: { title: 'Reservation Successful!', description: 'Your reservation has been successfully registered. We will be waiting for you at the appointed time.', new_reservation: 'New Reservation', back_to_mountain: 'Back to Tour Page' },
   }[pageLang];
 
 

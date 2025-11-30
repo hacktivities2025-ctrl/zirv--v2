@@ -40,7 +40,7 @@ export default function LoginPage() {
         toast({
             variant: "destructive",
             title: "Giriş uğursuz oldu",
-            description: "Email və parol daxil edilməlidir.",
+            description: "Email və ya parol düzgün deyil.",
         });
         return;
     }
@@ -82,7 +82,7 @@ export default function LoginPage() {
          toast({
             variant: "destructive",
             title: "Giriş uğursuz oldu",
-            description: error.message || 'Bilinməyən bir xəta baş verdi.',
+            description: "Email və ya parol düzgün deyil.",
         });
     }
   };

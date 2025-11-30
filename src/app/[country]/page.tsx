@@ -60,7 +60,7 @@ export default function MountainPage() {
         }
 
       } catch (error) {
-        console.error("Failed to load mountain data:", error);
+        console.error("Failed to load tour data:", error);
       } finally {
         setLoading(false);
       }
@@ -77,8 +77,8 @@ export default function MountainPage() {
 
 
     const t = {
-        az: { discover: 'Kəşf edin', all_mountains: 'Bütün dağlar', not_found: 'Dağ tapılmadı.' },
-        en: { discover: 'Discover', all_mountains: 'All Mountains', not_found: 'Mountain not found.' },
+        az: { discover: 'Kəşf edin', all_mountains: 'Bütün Turlar', not_found: 'Tur tapılmadı.' },
+        en: { discover: 'Discover', all_mountains: 'All Tours', not_found: 'Tour not found.' },
     }[pageLang];
 
   const handleCategoryClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, Icon: LucideIcon) => {

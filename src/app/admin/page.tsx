@@ -17,15 +17,15 @@ export default function AdminDashboardPage() {
 
       <Tabs defaultValue="mountains">
         <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
-          <TabsTrigger value="mountains">Dağlar</TabsTrigger>
+          <TabsTrigger value="mountains">Turlar</TabsTrigger>
           <TabsTrigger value="info-items">Məlumatlar</TabsTrigger>
         </TabsList>
         <TabsContent value="mountains">
           <Card>
             <CardHeader>
-              <CardTitle>Dağ İdarəetməsi</CardTitle>
+              <CardTitle>Tur İdarəetməsi</CardTitle>
               <CardDescription>
-                Yeni dağlar əlavə edin, mövcud olanları redaktə edin və ya silin.
+                Yeni turlar əlavə edin, mövcud olanları redaktə edin və ya silin.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -38,7 +38,7 @@ export default function AdminDashboardPage() {
              <CardHeader>
               <CardTitle>Məlumat İdarəetməsi</CardTitle>
               <CardDescription>
-                Dağlar üçün otel, restoran, mədəniyyət və s. kimi məlumatları idarə edin.
+                Turlar üçün otel, restoran, mədəniyyət və s. kimi məlumatları idarə edin.
               </CardDescription>
             </CardHeader>
             <CardContent>

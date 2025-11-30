@@ -18,7 +18,7 @@ import { useEffect } from 'react';
 import { useFirestore } from '@/firebase';
 
 const formSchema = z.object({
-  mountainId: z.string().min(1, 'Dağ seçmək məcburidir.'),
+  mountainId: z.string().min(1, 'Tur seçmək məcburidir.'),
   category: z.string().min(1, 'Kateqoriya seçmək məcburidir.'),
   name: z.string().optional(),
   name_en: z.string().optional(),
@@ -109,7 +109,7 @@ export default function InfoFormSheet({ isOpen, onOpenChange, onFormSubmit, item
     try {
       const selectedMountain = mountains.find(c => c.id === values.mountainId);
       if (!selectedMountain) {
-        throw new Error("Seçilmiş dağ tapılmadı.");
+        throw new Error("Seçilmiş tur tapılmadı.");
       }
 
       let itemData: Partial<InfoItem> = {
@@ -183,11 +183,11 @@ export default function InfoFormSheet({ isOpen, onOpenChange, onFormSubmit, item
               name="mountainId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Dağ</FormLabel>
+                  <FormLabel>Tur</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Dağ seçin" />
+                        <SelectValue placeholder="Tur seçin" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

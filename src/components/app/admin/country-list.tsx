@@ -30,7 +30,7 @@ export default function MountainList() {
       const data = await fetchMountains(firestore);
       setMountains(data);
     } catch (error) {
-      toast({ variant: 'destructive', title: 'Xəta', description: 'Dağları yükləmək mümkün olmadı.' });
+      toast({ variant: 'destructive', title: 'Xəta', description: 'Turları yükləmək mümkün olmadı.' });
     } finally {
       setLoading(false);
     }
@@ -59,10 +59,10 @@ export default function MountainList() {
     if (!selectedMountain || !firestore) return;
     try {
       await deleteMountain(firestore, selectedMountain.id);
-      toast({ title: 'Uğurlu', description: `${selectedMountain.name} dağı silindi.` });
+      toast({ title: 'Uğurlu', description: `${selectedMountain.name} turu silindi.` });
       loadMountains();
     } catch (error) {
-      toast({ variant: 'destructive', title: 'Xəta', description: 'Dağı silmək mümkün olmadı.' });
+      toast({ variant: 'destructive', title: 'Xəta', description: 'Turu silmək mümkün olmadı.' });
     } finally {
       setIsAlertOpen(false);
       setSelectedMountain(null);
@@ -83,7 +83,7 @@ export default function MountainList() {
     <div className="space-y-4">
       <div className="flex justify-end">
         <Button onClick={handleAddClick}>
-          <PlusCircle className="mr-2 h-4 w-4" /> Yeni Dağ Əlavə Et
+          <PlusCircle className="mr-2 h-4 w-4" /> Yeni Tur Əlavə Et
         </Button>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -127,7 +127,7 @@ export default function MountainList() {
           <AlertDialogHeader>
             <AlertDialogTitle>Silməni təsdiqləyirsiz?</AlertDialogTitle>
             <AlertDialogDescription>
-              Bu əməliyyat geri qaytarıla bilməz. Bu, '{selectedMountain?.name}' dağını və ona aid bütün məlumatları sistemdən siləcək.
+              Bu əməliyyat geri qaytarıla bilməz. Bu, '{selectedMountain?.name}' turunu və ona aid bütün məlumatları sistemdən siləcək.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

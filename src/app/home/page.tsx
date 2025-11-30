@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { useFirestore } from '@/firebase';
 import ParallaxBackground from '@/components/app/parallax-background';
 
-function AvailableMountains({ mountains, loading, lang, onMountainClick }: { mountains: Mountain[], loading: boolean, lang: 'az' | 'en', onMountainClick: (href: string) => void }) {
+function AvailableTours({ mountains, loading, lang, onMountainClick }: { mountains: Mountain[], loading: boolean, lang: 'az' | 'en', onMountainClick: (href: string) => void }) {
   const { isReadingMode, speakText } = useReadingMode();
 
   if (loading) {
@@ -40,8 +40,8 @@ function AvailableMountains({ mountains, loading, lang, onMountainClick }: { mou
   }
   
   const t = {
-      az: 'Mövcud Dağlar',
-      en: 'Available Mountains',
+      az: 'Mövcud Turlar',
+      en: 'Available Tours',
   };
 
   const handleSpeak = (text: string) => {
@@ -109,20 +109,20 @@ function TravelSection({ mountains, loading, lang, onMountainClick }: { mountain
 
   const t = {
     az: {
-        title: 'Zirvəyə Səyahətə Başla',
-        placeholder: 'Fəth etmək istədiyiniz dağı seçin...',
+        title: 'Səyahətə Başla',
+        placeholder: 'Getmək istədiyiniz turu seçin...',
         go: 'Get',
-        error: 'Zəhmət olmasa, getmək istədiyiniz dağı seçin.',
-        no_mountains_title: 'Hələ Heç Bir Dağ Əlavə Edilməyib',
-        no_mountains_desc: 'Səyahət məlumatlarını görmək üçün admin panelindən yeni bir dağ əlavə edin.'
+        error: 'Zəhmət olmasa, getmək istədiyiniz turu seçin.',
+        no_mountains_title: 'Hələ Heç Bir Tur Əlavə Edilməyib',
+        no_mountains_desc: 'Səyahət məlumatlarını görmək üçün admin panelindən yeni bir tur əlavə edin.'
     },
     en: {
-        title: 'Start Your Summit Journey',
-        placeholder: 'Select a mountain to conquer...',
+        title: 'Start Your Journey',
+        placeholder: 'Select a tour to join...',
         go: 'Go',
-        error: 'Please select a mountain you want to visit.',
-        no_mountains_title: 'No Mountains Added Yet',
-        no_mountains_desc: 'Add a new mountain from the admin panel to see travel information.'
+        error: 'Please select a tour you want to visit.',
+        no_mountains_title: 'No Tours Added Yet',
+        no_mountains_desc: 'Add a new tour from the admin panel to see travel information.'
     }
   }[lang];
 
@@ -318,8 +318,8 @@ export default function HomePage() {
         console.error("Failed to fetch mountains:", error);
         toast({
           variant: "destructive",
-          title: "Error fetching mountains",
-          description: "Could not load the list of mountains.",
+          title: "Error fetching tours",
+          description: "Could not load the list of tours.",
         });
       } finally {
         setLoading(false);
@@ -335,11 +335,11 @@ export default function HomePage() {
   const t = {
       az: { 
           title: 'Zirvələri Kəşf Edin', 
-          subtitle: 'Zirvə ilə səyahət etdiyiniz dağlar haqqında hər şeyi bir yerdə tapın.',
+          subtitle: 'Zirvə ilə səyahət etdiyiniz turlar haqqında hər şeyi bir yerdə tapın.',
       },
       en: { 
           title: 'Discover the Summits', 
-          subtitle: 'Find everything about the mountains you travel to with Zirvə, all in one place.',
+          subtitle: 'Find everything about the tours you travel to with Zirvə, all in one place.',
        },
   }[lang];
 
@@ -361,7 +361,7 @@ export default function HomePage() {
           </p>
         </div>
         
-        <AvailableMountains mountains={mountains} loading={loading} lang={lang} onMountainClick={handleMountainClick} />
+        <AvailableTours mountains={mountains} loading={loading} lang={lang} onMountainClick={handleMountainClick} />
 
         <TravelSection mountains={mountains} loading={loading} lang={lang} onMountainClick={handleMountainClick} />
 

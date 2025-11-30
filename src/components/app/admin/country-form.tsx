@@ -98,7 +98,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
       await createOrUpdateMountain(firestore, values, mountain?.id);
       toast({
         title: 'Uğurlu Əməliyyat',
-        description: `Dağ uğurla ${mountain ? 'yeniləndi' : 'yaradıldı'}.`,
+        description: `Tur uğurla ${mountain ? 'yeniləndi' : 'yaradıldı'}.`,
       });
       onFormSubmit();
       onOpenChange(false);
@@ -116,7 +116,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{mountain ? 'Dağı Redaktə Et' : 'Yeni Dağ Əlavə Et'}</DialogTitle>
+          <DialogTitle>{mountain ? 'Turu Redaktə Et' : 'Yeni Tur Əlavə Et'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
@@ -124,14 +124,14 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
             <div className='p-4 border rounded-lg space-y-4'>
                 <FormField control={form.control} name="name" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Dağ Adı (AZ)</FormLabel>
+                        <FormLabel>Tur Adı (AZ)</FormLabel>
                         <FormControl><Input placeholder="Məsələn: Şahdağ" {...field} value={field.value || ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="name_en" render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Dağ Adı (EN)</FormLabel>
+                        <FormLabel>Tur Adı (EN)</FormLabel>
                         <FormControl><Input placeholder="E.g.: Shahdag" {...field} value={field.value || ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
@@ -143,14 +143,14 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                 <FormField control={form.control} name="description" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Təsvir (AZ)</FormLabel>
-                        <FormControl><Textarea placeholder="Dağ haqqında qısa məlumat..." {...field} value={field.value || ''} /></FormControl>
+                        <FormControl><Textarea placeholder="Tur haqqında qısa məlumat..." {...field} value={field.value || ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="description_en" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Təsvir (EN)</FormLabel>
-                        <FormControl><Textarea placeholder="Brief information about the mountain..." {...field} value={field.value || ''} /></FormControl>
+                        <FormControl><Textarea placeholder="Brief information about the tour..." {...field} value={field.value || ''} /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />

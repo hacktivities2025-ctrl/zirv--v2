@@ -109,7 +109,7 @@ export default function InfoDataTable() {
     },
     {
       accessorKey: 'mountainId',
-      header: 'Dağ',
+      header: 'Tur',
       cell: ({ row }) => mountainMap.get(row.getValue('mountainId')) || 'Bilinmir',
       filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },
@@ -197,7 +197,7 @@ export default function InfoDataTable() {
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline">
                         <Filter className="mr-2 h-4 w-4" />
-                        Dağ
+                        Tur
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
