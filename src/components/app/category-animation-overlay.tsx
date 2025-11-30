@@ -28,3 +28,4 @@ export default function CategoryAnimationOverlay({ animation }: CategoryAnimatio
     </div>
   );
 }
+
