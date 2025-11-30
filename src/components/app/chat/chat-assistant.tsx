@@ -10,6 +10,7 @@ import type { TravelAiInput } from '@/ai/flows/travel-ai-types';
 import { useToast } from '@/hooks/use-toast';
 import './chat.css';
 
+
 interface Message {
   id: string;
   text: string;
