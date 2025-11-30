@@ -16,6 +16,7 @@ import { useFirestore, useUser } from '@/firebase';
 import { useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 
+
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Ad ən azı 2 hərf olmalıdır.' }),
   country: z.string().min(3, { message: 'Ölkə adı ən azı 3 hərf olmalıdır.' }),
