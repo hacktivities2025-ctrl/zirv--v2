@@ -54,6 +54,7 @@ export type InfoItem = {
 
 export type Reservation = {
   id: string;
+  userId: string;
   itemId: string;
   itemName: string;
   itemType: 'infoItem' | 'tour';

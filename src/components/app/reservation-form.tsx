@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { addReservation } from '@/lib/firebase-actions';
 import { useRouter } from 'next/navigation';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { Textarea } from '../ui/textarea';
 import { useState } from 'react';
 import { Mountain } from '@/lib/definitions';
@@ -104,6 +104,7 @@ interface ReservationFormProps {
 export default function ReservationForm({ item, lang }: ReservationFormProps) {
   const reservationSchema = createReservationSchema(lang);
   const t = translations[lang];
+  const { user } = useUser();
 
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
@@ -142,8 +143,18 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
 
   async function onSubmit(values: z.infer<typeof reservationSchema>) {
     if(!firestore) return;
+    if (!user) {
+        toast({
+            variant: 'destructive',
+            title: t.errorTitle,
+            description: 'Rezervasiya etmək üçün daxil olmalısınız.',
+        });
+        router.push('/login');
+        return;
+    }
     try {
       const reservationData = {
+        userId: user.uid,
         itemId: item.id,
         itemName: item.name,
         itemType: item.itemType,

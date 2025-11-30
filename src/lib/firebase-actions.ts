@@ -341,21 +341,39 @@ export async function deleteInfoItem(db: Firestore, id: string): Promise<void> {
 // --- Reservation Actions ---
 
 export async function addReservation(db: Firestore, reservation: Omit<Reservation, 'id' | 'createdAt'>): Promise<void> {
-  const reservationsCol = collection(db, 'reservations');
-  addDoc(reservationsCol, {
-    ...reservation,
-    createdAt: serverTimestamp()
-  }).then(docRef => {
-    console.log("Reservation added with ID: ", docRef.id);
-  }).catch(error => {
-    console.error("Error adding reservation: ", error);
-    errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: reservationsCol.path,
-        operation: 'create',
-        requestResourceData: reservation
-    }))
-  });
+    const batch = writeBatch(db);
+    const reservationsCol = collection(db, 'reservations');
+    const newReservationRef = doc(reservationsCol);
+
+    batch.set(newReservationRef, {
+        ...reservation,
+        createdAt: serverTimestamp()
+    });
+
+    if (reservation.itemType === 'tour' && reservation.finalPrice) {
+        const userRef = doc(db, 'users', reservation.userId);
+        const cashbackAmount = reservation.finalPrice * 0.05;
+        
+        batch.update(userRef, {
+            balance: increment(cashbackAmount),
+            toursAttended: increment(1)
+        });
+    }
+
+    try {
+        await batch.commit();
+        console.log("Reservation and user update successful.");
+    } catch (error) {
+        console.error("Error in reservation batch write: ", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: `batch write for reservation`,
+            operation: 'create',
+            requestResourceData: reservation
+        }));
+        throw error; // Re-throw the error to be caught by the UI
+    }
 }
+
 
 export async function getReservations(db: Firestore): Promise<Reservation[]> {
     const reservationsCol = collection(db, 'reservations');
