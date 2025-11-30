@@ -7,6 +7,7 @@ import { getReservations, fetchMountains } from '@/lib/firebase-actions';
 import { useFirestore } from '@/firebase';
 import { Skeleton } from '@/components/ui/skeleton';
 
+
 function ReservationChart() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
