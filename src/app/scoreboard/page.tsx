@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Medal, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+
 export default function UserScoreboardPage() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
