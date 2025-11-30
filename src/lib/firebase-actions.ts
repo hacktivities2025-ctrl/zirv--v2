@@ -23,7 +23,6 @@ import { slugify } from './utils';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 
-// --- User Friendly Error Handling ---
 function handleAuthError(error: any): string {
     if (error.code) {
         switch (error.code) {
@@ -44,7 +43,6 @@ function handleAuthError(error: any): string {
 }
 
 
-// --- User & Agent Creation ---
 
 async function createAuthUser(email: string, password: string): Promise<string> {
     const auth = getAuth();
@@ -77,7 +75,6 @@ export async function createUserProfile(db: Firestore, data: Omit<UserProfile, '
         family: data.family,
     };
 
-    // Add welcome coupon
     const welcomeCouponRef = doc(collection(db, 'coupons'));
     const welcomeCoupon: Omit<Coupon, 'id'> = {
         userId,
@@ -172,7 +169,6 @@ export async function getUserProfile(db: Firestore, userId: string): Promise<Use
         const data = docSnap.data();
         return {
             ...data,
-            // ensure default values
             balance: data.balance || 0,
             toursAttended: data.toursAttended || 0,
         } as UserProfile;
@@ -193,7 +189,6 @@ export async function getAllUsers(db: Firestore): Promise<UserProfile[]> {
 }
 
 
-// --- Mountain Actions ---
 
 export async function fetchMountains(db: Firestore): Promise<Mountain[]> {
   const mountainsCol = collection(db, 'mountains');
@@ -615,7 +610,6 @@ export async function awardScoreboardPrizes(db: Firestore): Promise<void> {
     }
 }
 
-// --- Auth Actions ---
 export async function signInUser(email: string, password: string) {
     const auth = getAuth();
     try {
