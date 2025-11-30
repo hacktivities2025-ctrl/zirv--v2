@@ -1,5 +1,6 @@
 'use client';
 
+
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import CategoryAnimationOverlay from './category-animation-overlay';
@@ -32,7 +33,7 @@ export function AnimationProvider({ children }: { children: ReactNode }) {
       onAnimationEnd?.();
       setAnimation(null);
       setIsAnimating(false);
-    }, 500); // Corresponds to the animation duration
+    }, 500);
   }, []);
 
   return (
