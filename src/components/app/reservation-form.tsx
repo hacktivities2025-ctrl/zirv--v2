@@ -11,7 +11,6 @@ import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { InfoItem } from '@/lib/definitions';
 import { useToast } from '@/hooks/use-toast';
 import { addReservation } from '@/lib/firebase-actions';
 import { useRouter } from 'next/navigation';
@@ -77,7 +76,12 @@ const createReservationSchema = (lang: Lang) => z.object({
 
 
 interface ReservationFormProps {
-  item: InfoItem;
+  item: {
+    id: string;
+    name: string;
+    mountainSlug: string;
+    itemType: 'tour' | 'infoItem';
+  };
   lang: Lang;
 }
 
@@ -107,6 +111,7 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
       const reservationData = {
         itemId: item.id,
         itemName: item.name,
+        itemType: item.itemType,
         mountainSlug: item.mountainSlug,
         ...values,
         date: format(values.date, 'yyyy-MM-dd'),

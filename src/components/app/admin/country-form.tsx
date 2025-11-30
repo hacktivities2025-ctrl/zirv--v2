@@ -15,6 +15,7 @@ import { Loader2 } from 'lucide-react';
 import { useFirestore } from '@/firebase';
 import { useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Ad (AZ) ən azı 2 hərf olmalıdır.' }),
@@ -23,12 +24,14 @@ const formSchema = z.object({
   description_en: z.string().optional(),
   imageUrl: z.string().url({ message: 'Düzgün bir URL daxil edin.' }),
   price: z.coerce.number().positive({ message: 'Qiymət müsbət ədəd olmalıdır.' }),
+  durationHours: z.coerce.number().positive({ message: 'Müddət müsbət ədəd olmalıdır.' }).optional(),
   height: z.coerce.number().positive({ message: 'Hündürlük müsbət ədəd olmalıdır.' }).optional(),
   bestSeason: z.string().optional(),
   difficulty: z.enum(['Asan', 'Orta', 'Çətin', 'Ekstremal']).optional(),
   latitude: z.coerce.number().optional(),
   longitude: z.coerce.number().optional(),
   temperature: z.string().optional(),
+  hasCoupon: z.boolean().default(false),
 });
 
 interface MountainFormProps {
@@ -48,12 +51,14 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
       description_en: '',
       imageUrl: '',
       price: undefined,
+      durationHours: undefined,
       height: undefined,
       bestSeason: '',
       difficulty: undefined,
       latitude: undefined,
       longitude: undefined,
       temperature: '',
+      hasCoupon: false,
     },
   });
 
@@ -70,12 +75,14 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         description_en: mountain.description_en || '',
         imageUrl: mountain.imageUrl || '',
         price: mountain.price || undefined,
+        durationHours: mountain.durationHours || undefined,
         height: mountain.height || undefined,
         bestSeason: mountain.bestSeason || '',
         difficulty: mountain.difficulty || undefined,
         latitude: mountain.latitude || undefined,
         longitude: mountain.longitude || undefined,
         temperature: mountain.temperature || '',
+        hasCoupon: mountain.hasCoupon || false,
       });
     } else {
       form.reset({
@@ -85,12 +92,14 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         description_en: '',
         imageUrl: '',
         price: undefined,
+        durationHours: undefined,
         height: undefined,
         bestSeason: '',
         difficulty: undefined,
         latitude: undefined,
         longitude: undefined,
         temperature: '',
+        hasCoupon: false,
       });
     }
   }, [mountain, form]);
@@ -166,11 +175,29 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                 </FormItem>
             )} />
             
-             <FormField control={form.control} name="price" render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Qiymət (AZN)</FormLabel>
-                    <FormControl><Input type="number" placeholder="50" {...field} value={field.value || ''}/></FormControl>
-                    <FormMessage />
+             <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                 <FormField control={form.control} name="price" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Qiymət (AZN)</FormLabel>
+                        <FormControl><Input type="number" placeholder="50" {...field} value={field.value || ''}/></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+                 <FormField control={form.control} name="durationHours" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Müddət (saat)</FormLabel>
+                        <FormControl><Input type="number" placeholder="8" {...field} value={field.value || ''} /></FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )} />
+            </div>
+
+             <FormField control={form.control} name="hasCoupon" render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="space-y-0.5">
+                        <FormLabel>Kupon Tətbiq Et</FormLabel>
+                    </div>
+                    <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
                 </FormItem>
             )} />
 

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { getInfoItemById, getMountainData } from '@/lib/firebase-actions';
 import { InfoItem, Mountain } from '@/lib/definitions';
@@ -15,14 +15,17 @@ import { useFirestore } from '@/firebase';
 
 type Lang = 'az' | 'en';
 
-export default function ReservationPage() {
+function ReservationContent() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const itemId = Array.isArray(params.itemId) ? params.itemId[0] : params.itemId;
+  const itemType = searchParams.get('type') === 'tour' ? 'tour' : 'infoItem';
+
   const firestore = useFirestore();
   
-  const [item, setItem] = useState<InfoItem | null>(null);
-  const [mountain, setMountain] = useState<Mountain | null>(null);
+  const [item, setItem] = useState<InfoItem | Mountain | null>(null);
   const [loading, setLoading] = useState(true);
   const [lang, setLang] = useState<Lang>('az');
 
@@ -45,12 +48,17 @@ export default function ReservationPage() {
     async function loadItem() {
       setLoading(true);
       try {
-        const itemData = await getInfoItemById(firestore, itemId);
-        setItem(itemData);
-        if (itemData) {
-            const mountainData = await getMountainData(firestore, itemData.mountainSlug);
-            setMountain(mountainData);
+        let itemData: InfoItem | Mountain | null = null;
+        if (itemType === 'tour') {
+            const q = await getDocs(query(collection(firestore, "mountains"), where("id", "==", itemId)));
+            if (!q.empty) {
+                const doc = q.docs[0];
+                itemData = { id: doc.id, ...doc.data() } as Mountain;
+            }
+        } else {
+            itemData = await getInfoItemById(firestore, itemId);
         }
+        setItem(itemData);
       } catch (error) {
         console.error("Failed to load item data:", error);
       } finally {
@@ -58,11 +66,11 @@ export default function ReservationPage() {
       }
     }
     loadItem();
-  }, [itemId, firestore]);
+  }, [itemId, firestore, itemType]);
   
   const t = {
-    az: { back: 'Geri', not_found: 'Məkan tapılmadı.', hotel: 'Otel', restaurant: 'Restoran', details: 'Rezervasiya Detalları' },
-    en: { back: 'Back', not_found: 'Location not found.', hotel: 'Hotel', restaurant: 'Restaurant', details: 'Reservation Details' },
+    az: { back: 'Geri', not_found: 'Məkan tapılmadı.', hotel: 'Otel', restaurant: 'Restoran', tour: 'Tur', details: 'Rezervasiya Detalları' },
+    en: { back: 'Back', not_found: 'Location not found.', hotel: 'Hotel', restaurant: 'Restaurant', tour: 'Tour', details: 'Reservation Details' },
   }[pageLang];
 
 
@@ -95,8 +103,27 @@ export default function ReservationPage() {
     );
   }
   
-  const name = (pageLang === 'en' && item.name_en) ? item.name_en : item.name;
-  const description = (pageLang === 'en' && item.description_en) ? item.description_en : item.description;
+  const name = (pageLang === 'en' && 'name_en' in item && item.name_en) ? item.name_en : item.name;
+  const description = (pageLang === 'en' && 'description_en' in item && item.description_en) ? item.description_en : item.description;
+
+  const getCategoryName = () => {
+    if (itemType === 'tour') return t.tour;
+    if ('category' in item) {
+        switch(item.category) {
+            case 'hotels': return t.hotel;
+            case 'restaurants': return t.restaurant;
+            default: return '';
+        }
+    }
+    return '';
+  }
+  
+  const itemForForm = {
+    id: item.id,
+    name: item.name,
+    mountainSlug: 'slug' in item ? item.slug : '',
+    itemType: itemType,
+  }
 
   return (
     <>
@@ -110,25 +137,28 @@ export default function ReservationPage() {
           <Card>
             <div className="grid md:grid-cols-2">
                 <div className="relative h-64 md:h-full">
-                    <Image src={item.imageUrl || ''} alt={name} layout="fill" objectFit="cover" className="rounded-t-lg md:rounded-l-lg md:rounded-t-none" />
+                    <Image src={item.imageUrl || ''} alt={name || ''} layout="fill" objectFit="cover" className="rounded-t-lg md:rounded-l-lg md:rounded-t-none" />
                 </div>
                 <div>
                     <CardHeader>
                         <CardTitle className="text-3xl">{name}</CardTitle>
                         <CardDescription>
-                            {item.rating && (
-                                <div className="flex items-center gap-1 text-sm mt-1">
-                                    <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                                    <span>{item.rating.toFixed(1)}</span>
-                                    <span className="text-muted-foreground">· {item.category === 'hotels' ? t.hotel : t.restaurant}</span>
-                                </div>
-                            )}
+                             <div className="flex items-center gap-2 text-sm mt-1">
+                                {('rating' in item && item.rating) && (
+                                    <>
+                                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                                        <span>{item.rating.toFixed(1)}</span>
+                                        <span className='px-1'>·</span>
+                                    </>
+                                )}
+                                <span className="text-muted-foreground">{getCategoryName()}</span>
+                            </div>
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
                         <p className="mb-6 text-muted-foreground">{description}</p>
                         <h3 className="font-semibold mb-4 text-lg border-t pt-4">{t.details}</h3>
-                        <ReservationForm item={item} lang={pageLang} />
+                        <ReservationForm item={itemForForm} lang={pageLang} />
                     </CardContent>
                 </div>
             </div>
@@ -137,4 +167,13 @@ export default function ReservationPage() {
       </main>
     </>
   );
+}
+
+
+export default function ReservationPage() {
+    return (
+        <Suspense fallback={<div className='h-screen w-full flex items-center justify-center'><p>Loading...</p></div>}>
+            <ReservationContent />
+        </Suspense>
+    )
 }

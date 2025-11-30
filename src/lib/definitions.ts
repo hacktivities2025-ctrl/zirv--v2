@@ -10,6 +10,8 @@ export type Mountain = {
   description: string;
   description_en?: string;
   price: number;
+  durationHours?: number; // Added duration
+  hasCoupon?: boolean; // Added coupon flag
   height?: number;
   bestSeason?: string;
   difficulty?: 'Asan' | 'Orta' | 'Çətin' | 'Ekstremal';
@@ -54,6 +56,7 @@ export type Reservation = {
   id: string;
   itemId: string;
   itemName: string;
+  itemType: 'infoItem' | 'tour'; // Added to distinguish reservation types
   mountainSlug?: string;
   userName: string;
   email: string;
