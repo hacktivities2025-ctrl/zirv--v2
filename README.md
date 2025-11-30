@@ -112,3 +112,4 @@ Layihənin hazırlanması zamanı müasir və effektiv veb texnologiyalardan ist
 # sabahahazirolmalidirammabudayaxsdiri
 # zirve-v1.vercel.app
 # zirve-v1.vercel.app
+# zirv--v2
