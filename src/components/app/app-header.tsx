@@ -270,7 +270,7 @@ const AppHeader = ({ isAdmin = false, lang, setLang }: AppHeaderProps) => {
                         <PenSquare className="mr-2 h-4 w-4" />
                         <span>{translations.communication_aid}</span>
                      </DropdownMenuItem>
-                     <DropdownMenuItem onSelect={() => router.push('/admin/scoreboard')}>
+                     <DropdownMenuItem onSelect={() => router.push(isAdmin ? '/admin/scoreboard' : '/scoreboard')}>
                         <Trophy className="mr-2 h-4 w-4" />
                         <span>{translations.scoreboard}</span>
                      </DropdownMenuItem>
