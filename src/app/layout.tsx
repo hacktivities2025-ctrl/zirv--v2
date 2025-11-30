@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/app/theme-provider';
 import { AnimationProvider } from '@/components/app/animation-provider';
 import { ReadingModeProvider } from '@/components/app/reading-mode-provider';
 
+
 export const metadata: Metadata = {
   title: 'Zirvə',
   description: 'Your guide to exploring the world.',
