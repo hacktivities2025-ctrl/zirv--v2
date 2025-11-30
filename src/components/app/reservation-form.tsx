@@ -36,6 +36,7 @@ const translations = {
     errorTitle: 'Xəta',
     errorDesc: 'Rezervasiya zamanı xəta baş verdi.',
     loginRequired: 'Rezervasiya etmək üçün daxil olmalısınız.',
+    insufficientBalance: 'Balansınızda kifayət qədər vəsait yoxdur.',
     coupon_code: 'Kupon Kodu',
     apply_coupon: 'Tətbiq et',
     coupon_applied: 'Kupon tətbiq edildi!',
@@ -64,6 +65,7 @@ const translations = {
     errorTitle: 'Error',
     errorDesc: 'An error occurred during reservation.',
     loginRequired: 'You must be logged in to make a reservation.',
+    insufficientBalance: 'You do not have enough funds in your balance.',
     coupon_code: 'Coupon Code',
     apply_coupon: 'Apply',
     coupon_applied: 'Coupon Applied!',
@@ -106,7 +108,7 @@ interface ReservationFormProps {
 export default function ReservationForm({ item, lang }: ReservationFormProps) {
   const reservationSchema = createReservationSchema(lang);
   const t = translations[lang];
-  const { user } = useUser();
+  const { user, profile } = useUser();
   const router = useRouter();
 
   const [couponCode, setCouponCode] = useState('');
@@ -145,7 +147,7 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
 
   async function onSubmit(values: z.infer<typeof reservationSchema>) {
     if(!firestore) return;
-    if (!user) {
+    if (!user || !profile) {
         toast({
             variant: 'destructive',
             title: t.errorTitle,
@@ -154,6 +156,16 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
         router.push('/login');
         return;
     }
+
+    if (item.itemType === 'tour' && finalPrice && profile.balance < finalPrice) {
+        toast({
+            variant: 'destructive',
+            title: t.errorTitle,
+            description: t.insufficientBalance,
+        });
+        return;
+    }
+
     try {
       const reservationData = {
         userId: user.uid,
