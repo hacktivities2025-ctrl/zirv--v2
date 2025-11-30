@@ -354,15 +354,24 @@ export async function addReservation(db: Firestore, reservation: Omit<Reservatio
         const userRef = doc(db, 'users', reservation.userId);
         const cashbackAmount = reservation.finalPrice * 0.05;
         
-        batch.update(userRef, {
-            balance: increment(cashbackAmount),
-            toursAttended: increment(1)
-        });
+        // Instead of adding to balance, create a cashback coupon
+        const cashbackCouponRef = doc(collection(db, 'coupons'));
+        const cashbackCoupon: Omit<Coupon, 'id'> = {
+            userId: reservation.userId,
+            code: `CASHBACK-${newReservationRef.id.substring(0, 8).toUpperCase()}`,
+            description: `${reservation.itemName} turundan ${cashbackAmount.toFixed(2)} xal qazandınız!`,
+            points: cashbackAmount,
+            isUsed: false,
+            createdAt: serverTimestamp(),
+        };
+
+        batch.set(cashbackCouponRef, cashbackCoupon);
+        batch.update(userRef, { toursAttended: increment(1) });
     }
 
     try {
         await batch.commit();
-        console.log("Reservation and user update successful.");
+        console.log("Reservation and related updates successful.");
     } catch (error) {
         console.error("Error in reservation batch write: ", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({

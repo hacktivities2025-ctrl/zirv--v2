@@ -35,6 +35,7 @@ const translations = {
     successDesc: 'Rezervasiyanız qəbul edildi. Təşəkkür edirik!',
     errorTitle: 'Xəta',
     errorDesc: 'Rezervasiya zamanı xəta baş verdi.',
+    loginRequired: 'Rezervasiya etmək üçün daxil olmalısınız.',
     coupon_code: 'Kupon Kodu',
     apply_coupon: 'Tətbiq et',
     coupon_applied: 'Kupon tətbiq edildi!',
@@ -62,6 +63,7 @@ const translations = {
     successDesc: 'Your reservation has been received. Thank you!',
     errorTitle: 'Error',
     errorDesc: 'An error occurred during reservation.',
+    loginRequired: 'You must be logged in to make a reservation.',
     coupon_code: 'Coupon Code',
     apply_coupon: 'Apply',
     coupon_applied: 'Coupon Applied!',
@@ -105,6 +107,7 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
   const reservationSchema = createReservationSchema(lang);
   const t = translations[lang];
   const { user } = useUser();
+  const router = useRouter();
 
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
@@ -113,8 +116,8 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
   const form = useForm<z.infer<typeof reservationSchema>>({
     resolver: zodResolver(reservationSchema),
     defaultValues: {
-      userName: '',
-      email: '',
+      userName: user?.displayName || '',
+      email: user?.email || '',
       guests: 1,
       time: '19:00',
       specialRequests: '',
@@ -122,7 +125,6 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
   });
 
   const { toast } = useToast();
-  const router = useRouter();
   const { isSubmitting } = form.formState;
   const firestore = useFirestore();
 
@@ -147,7 +149,7 @@ export default function ReservationForm({ item, lang }: ReservationFormProps) {
         toast({
             variant: 'destructive',
             title: t.errorTitle,
-            description: 'Rezervasiya etmək üçün daxil olmalısınız.',
+            description: t.loginRequired,
         });
         router.push('/login');
         return;
