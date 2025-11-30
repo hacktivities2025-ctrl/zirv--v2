@@ -1,5 +1,6 @@
 'use client';
 
+
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { fetchToursForAgent, deleteTour } from '@/lib/firebase-actions';
