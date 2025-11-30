@@ -10,8 +10,8 @@ export type Mountain = {
   description: string;
   description_en?: string;
   price: number;
-  durationHours?: number; // Added duration
-  hasCoupon?: boolean; // Added coupon flag
+  durationHours: number;
+  hasCoupon?: boolean; 
   height?: number;
   bestSeason?: string;
   difficulty?: 'Asan' | 'Orta' | 'Çətin' | 'Ekstremal';

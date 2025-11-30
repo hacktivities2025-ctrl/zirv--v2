@@ -24,7 +24,7 @@ const formSchema = z.object({
   description_en: z.string().optional(),
   imageUrl: z.string().url({ message: 'Düzgün bir URL daxil edin.' }),
   price: z.coerce.number().positive({ message: 'Qiymət müsbət ədəd olmalıdır.' }),
-  durationHours: z.coerce.number().positive({ message: 'Müddət müsbət ədəd olmalıdır.' }).optional(),
+  durationHours: z.coerce.number().positive({ message: 'Müddət müsbət ədəd olmalıdır.' }),
   height: z.coerce.number().positive({ message: 'Hündürlük müsbət ədəd olmalıdır.' }).optional(),
   bestSeason: z.string().optional(),
   difficulty: z.enum(['Asan', 'Orta', 'Çətin', 'Ekstremal']).optional(),
@@ -51,7 +51,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
       description_en: '',
       imageUrl: '',
       price: 0,
-      durationHours: undefined,
+      durationHours: 0,
       height: undefined,
       bestSeason: '',
       difficulty: undefined,
@@ -75,7 +75,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         description_en: mountain.description_en || '',
         imageUrl: mountain.imageUrl || '',
         price: mountain.price || 0,
-        durationHours: mountain.durationHours || undefined,
+        durationHours: mountain.durationHours || 0,
         height: mountain.height || undefined,
         bestSeason: mountain.bestSeason || '',
         difficulty: mountain.difficulty || undefined,
@@ -92,7 +92,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
         description_en: '',
         imageUrl: '',
         price: 0,
-        durationHours: undefined,
+        durationHours: 0,
         height: undefined,
         bestSeason: '',
         difficulty: undefined,
@@ -206,7 +206,7 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                     <FormField control={form.control} name="height" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Hündürlük (m)</FormLabel>
-                            <FormControl><Input type="number" placeholder="4243" {...field} /></FormControl>
+                            <FormControl><Input type="number" placeholder="4243" {...field} value={field.value === 0 ? '' : field.value || ''} onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
@@ -246,14 +246,14 @@ export default function MountainForm({ isOpen, onOpenChange, onFormSubmit, count
                     <FormField control={form.control} name="latitude" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Enlik (Latitude)</FormLabel>
-                            <FormControl><Input type="number" step="any" placeholder="41.032" {...field} /></FormControl>
+                            <FormControl><Input type="number" step="any" placeholder="41.032" {...field} value={field.value === 0 ? '' : field.value || ''} onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="longitude" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Uzunluq (Longitude)</FormLabel>
-                            <FormControl><Input type="number" step="any" placeholder="48.271" {...field} /></FormControl>
+                            <FormControl><Input type="number" step="any" placeholder="48.271" {...field} value={field.value === 0 ? '' : field.value || ''} onChange={e => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))} /></FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
