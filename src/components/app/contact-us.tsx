@@ -114,6 +114,7 @@ export default function ContactUs({ lang, translations }: ContactUsProps) {
     }
   }
 
+  
   const handleSelect = (event: Event) => {
     event.preventDefault();
     setIsOpen(true);
